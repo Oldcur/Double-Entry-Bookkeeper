@@ -1,0 +1,2416 @@
+
+
+
+Sub Button3_Click()
+
+
+ 
+
+
+ 'First check if all the necessary worksheets
+exist, and, if they don't, create them
+
+
+ 
+
+
+
+ InitializeSheets
+
+
+ MsgBox "Pick the account for the first
+entry"
+
+
+ mySForm                  'Takes you to Userform1,
+which puts the user selection of Amount and Date into cell D1 on sheet
+"options"
+
+
+ 
+
+
+ Dim Amount1 As Currency
+
+
+ Dim Amount1a As Currency
+
+
+ Dim Amount2 As Currency
+
+
+ Dim Amount3 As Currency
+
+
+ Dim CR As Currency
+
+
+ Dim DR As Currency
+
+
+ Dim Trans_Date As Date
+
+
+ Dim Ac1 As String
+
+
+ Dim Ac2 As String
+
+
+ Dim Ac3 As String
+
+
+ Dim Temp_Col As Byte
+
+
+ Dim Destination_Sheet As String
+
+
+ Dim Memo As String
+
+
+ 
+
+
+ DR = 0
+
+
+ CR = 0
+
+
+ 
+
+
+
+ Amount1 = InputBox("Amount (+ or
+-)?")
+
+
+ Amount1a = Amount1                        'Because for some weird
+reason the program changes the sign of Amount 1 after Input_Account
+
+
+ Trans_Date = InputBox("Date
+(mm/dd/yy)?")
+
+
+ Ac1 =
+Sheets("options").Range("D1").Value     'The account the user picked for which to
+input a value
+
+
+ Memo = InputBox("Memo?
+(optional)")           'Put in a
+description of the transaction if you like
+
+
+ 
+
+
+ Temp_Col = Return_Col(Ac1, Amount1)   'Decides whether it is DR or CR based on
+asset/liab, amt is + or -
+
+
+ 
+
+
+ 'Rem Asset/Expense is DR/CR for +/-; Liab/Rev
+is CR/DR for +/-
+
+
+ 
+
+
+Destination_Sheet =
+DirectSheet(Ac1)  'Tells which sheet to
+put the data in
+
+
+ 
+
+
+Call Input_Account(Destination_Sheet,
+Amount1, Trans_Date, Temp_Col, Memo)  
+'Input the data
+
+
+ 
+
+
+'Keep score of Credit and Debit
+
+
+If InStr(Destination_Sheet,
+"A-") = 1 Then
+
+
+   
+If Amount1a > 0 Then
+
+
+       
+DR = Amount1a                            
+'Increase in asset is DR
+
+
+   
+Else
+
+
+       
+CR = -Amount1a                            'Decrease in asset is CR
+
+
+   
+End If
+
+
+Else
+
+
+   
+If Amount1a > 0 Then                          'Increase in
+liability is CR
+
+
+       
+CR = Amount1a
+
+
+   
+Else
+
+
+       
+DR = -Amount1a                           
+'Decrease in liability is DR
+
+
+   
+End If
+
+
+End If
+
+
+ 
+
+
+Call Journal_Entry(Trans_Date, Ac1,
+CR, DR, 1)        'Put date, account, CR
+or DR into journal entry sheet
+
+
+ 
+
+
+ 
+
+
+MsgBox "Pick the account for the
+counter entry"     'The second of
+the "double" entry
+
+
+ 
+
+
+ mySForm                  'Back to Userform1, which
+puts the user selection of Amount and Date into cell D1 on sheet
+"options"
+
+
+ 
+
+
+ 
+Amount2 = InputBox("Amount (+ or -)?", Default:=Amount1)   'As default, assumes the amount is the same.
+Make sure sign is right
+
+
+ 
+Amount2a = Amount2                    
+'Just in case the same glitch as above
+
+
+ 
+Ac2 = Sheets("options").Range("D1").Value
+
+
+ 
+Temp_Col = Return_Col(Ac2, Amount2)  
+'Decides whether it is DR or CR based on asset/liab, amt is + or -
+
+
+ Destination_Sheet = DirectSheet(Ac2)  'Tells which sheet to put the data in
+
+
+Call Input_Account(Destination_Sheet,
+Amount2, Trans_Date, Temp_Col, Memo)  
+'Input second entry
+
+
+ 
+
+
+CR = 0
+
+
+DR = 0
+
+
+ 
+
+
+If InStr(Destination_Sheet,
+"A-") = 1 Then
+
+
+   
+If Amount2a > 0 Then
+
+
+       
+DR = Amount2a
+
+
+   
+Else
+
+
+       
+CR = -Amount2a
+
+
+   
+End If
+
+
+Else
+
+
+   
+If Amount2a > 0 Then
+
+
+       
+CR = Amount2a
+
+
+   
+Else
+
+
+       
+DR = -Amount2a
+
+
+   
+End If
+
+
+End If
+
+
+ 
+
+
+If Journal_Entry(Trans_Date, Ac2, CR,
+DR, 2) = False Then        'Put date,
+account, CR or DR into journal entry sheet
+
+
+ 
+
+
+ 
+
+
+   
+MsgBox "Pick the account for the other counter entry"      'The third of the "double"
+entry, if Journal_Entry shows they don't add up yet
+
+
+ 
+
+
+   
+mySForm                  'Back to
+Userform1, which puts the user selection of Amount and Date into cell D1 on
+sheet "options"
+
+
+   
+Amount3 = InputBox("Amount (+ or -)?", Default:=Abs(Amount1a)
+- Abs(Amount2a))    'As default, assumes
+the amount is the difference. Make sure sign is right
+
+
+   
+Amount3a = Amount3                    
+'Just in case the same glitch as above
+
+
+   
+Ac3 = Sheets("options").Range("D1").Value
+
+
+   
+Temp_Col = Return_Col(Ac3, Amount3)  
+'Decides whether it is DR or CR based on asset/liab, amt is + or -
+
+
+   
+Destination_Sheet = DirectSheet(Ac3) 
+'Tells which sheet to put the data in
+
+
+   
+Call Input_Account(Destination_Sheet, Amount3, Trans_Date, Temp_Col,
+Memo)   'Input the data
+
+
+ 
+
+
+   
+CR = 0
+
+
+   
+DR = 0
+
+
+ 
+
+
+   
+If InStr(Destination_Sheet, "A-") = 1 Then
+
+
+       
+If Amount3a > 0 Then
+
+
+            DR = Amount3a
+
+
+       
+Else
+
+
+            CR = -Amount3a
+
+
+       
+End If
+
+
+   
+Else
+
+
+       
+If Amount3a > 0 Then
+
+
+            CR = Amount3a
+
+
+       
+Else
+
+
+            DR = -Amount3a
+
+
+       
+End If
+
+
+   
+End If
+
+
+ 
+
+
+ 
+
+
+   
+If Journal_Entry(Trans_Date, Ac3, CR, DR, 3) = False Then        'Put date, account, CR or DR into
+journal entry sheet, check total DR vs CR
+
+
+       
+MsgBox "Debits != Credits: Reverse & Do Over"
+
+
+   
+End If
+
+
+   
+
+
+
+End If
+
+
+ 
+
+
+MsgBox "Transaction entered"
+
+
+Call JEntry_Insertrow                                              
+'To separate each journal entry
+
+
+ 
+
+
+End Sub
+
+
+Function Journal_Entry(EntryDate As
+Date, AcName As String, Credit As Currency, Debit As Currency, Entry As Byte)
+As Boolean
+
+
+ 
+
+
+Dim wksht As Worksheet
+
+
+Dim i As Integer
+
+
+Dim flag As Boolean
+
+
+Dim DRTotal As Currency
+
+
+Dim CRTotal  As Currency
+
+
+ 
+
+
+For Each wksht In
+ActiveWorkbook.Worksheets
+
+
+   
+If wksht.Name = "J_Entry" Then flag = True
+
+
+Next
+
+
+ 
+
+
+If flag = False Then                                'Create J_Entry
+worksheet if it doesn't already exist, add titles
+
+
+   
+Worksheets.Add().Name = "J_Entry"
+
+
+   
+Worksheets("J_Entry").Activate
+
+
+   
+Cells(1, 1).Value = "Date"
+
+
+   
+Cells(1, 2).Value = "Account"
+
+
+   
+Cells(1, 3).Value = "DR"
+
+
+   
+Cells(1, 4).Value = "CR"
+
+
+   
+Cells(3, 1).Value = "x"                          'Mark the starting
+row with an "x" in A3
+
+
+End If
+
+
+ 
+
+
+Worksheets("J_Entry").Activate
+
+
+i = 3                                              
+'Find the starting row, marked with an "x" in Col A
+
+
+While Not Cells(i, 1).Value =
+"x"
+
+
+i = i + 1
+
+
+Wend
+
+
+ 
+
+
+Journal_Entry = True
+
+
+ 
+
+
+Cells(i, 1).Value = EntryDate                        'Put in date, account,
+debit or credit. This also overwrites the "x"
+
+
+Cells(i, 2).Value = AcName
+
+
+Cells(i, 3).Value = Debit
+
+
+Cells(i, 4) = Credit
+
+
+Cells(i + 1, 1).Value =
+"x"                         
+'Mark the last row with "x"
+
+
+ 
+
+
+Columns("A:D").Select
+
+
+Selection.Columns.AutoFit
+
+
+   
+
+
+
+DRTotal = 0
+
+
+CRTotal = 0
+
+
+ 
+
+
+If Entry = 3 Then                                    'Add up
+debits and credits
+
+
+   
+DRTotal = Cells(i, 3).Value + Cells(i - 1, 3).Value + Cells(i - 2,
+3).Value
+
+
+   
+CRTotal = Cells(i, 4).Value + Cells(i - 1, 4).Value + Cells(i - 2,
+4).Value
+
+
+ElseIf Entry = 2 Then
+
+
+   
+DRTotal = Cells(i, 3).Value + Cells(i - 1, 3).Value
+
+
+   
+CRTotal = Cells(i, 4).Value + Cells(i - 1, 4).Value
+
+
+Else
+
+
+Exit Function
+
+
+End If
+
+
+ 
+
+
+If DRTotal <> CRTotal Then
+Journal_Entry = False
+
+
+ 
+
+
+End Function
+
+
+ 
+
+
+ 
+
+
+Sub InitializeSheets()
+
+
+Dim SheetNameArray(1 To 14) As String
+
+
+ 
+
+
+SheetNameArray(1) = "A-cash"
+
+
+SheetNameArray(2) =
+"A-rcbls"
+
+
+SheetNameArray(3) =
+"A-other"
+
+
+SheetNameArray(4) =
+"A-payrollexp"
+
+
+SheetNameArray(5) =
+"A-adminexp"
+
+
+SheetNameArray(6) =
+"A-taxetc"
+
+
+SheetNameArray(7) =
+"A-otheropex"
+
+
+SheetNameArray(8) =
+"A-freelancexp"
+
+
+SheetNameArray(9) = "L-revs"
+
+
+SheetNameArray(10) =
+"L-defdrevs"
+
+
+SheetNameArray(11) =
+"L-payables"
+
+
+SheetNameArray(12) =
+"L-accpayroll"
+
+
+SheetNameArray(13) =
+"L-loans"
+
+
+SheetNameArray(14) =
+"L-otheraccrued"
+
+
+ 
+
+
+Dim SheetCounter As Byte
+
+
+Dim i As Byte
+
+
+Dim NameArrayCell As Byte
+
+
+Dim cum As Byte
+
+
+ 
+
+
+cum = 0
+
+
+SheetCounter = 0
+
+
+ 
+
+
+For Each wksht In
+ActiveWorkbook.Worksheets
+
+
+   
+SheetCounter = SheetCounter + 1
+
+
+Next
+
+
+ 
+
+
+'So now you have SheetCounter = the
+number of sheets at the beginning of the process
+
+
+ 
+
+
+For NameArrayCell = 1 To 14
+
+
+   
+cum = 0
+
+
+   
+For i = 1 To SheetCounter           
+'For each of the pre-existing sheets, check against each of the names in
+the array above
+
+
+       
+If SheetNameArray(NameArrayCell) = Worksheets(i).Name Then
+
+
+       
+cum = cum + 1
+
+
+       
+End If
+
+
+   
+Next                                 
+'If it doesn't find the sheet name, cum is zero and it will add it
+
+
+       
+If cum = 0 Then
+
+
+            Worksheets.Add().Name =
+SheetNameArray(NameArrayCell)
+
+
+           
+Worksheets(SheetNameArray(NameArrayCell)).Activate
+
+
+           
+ActiveSheet.Range("A1").Value = "Date"
+
+
+           
+ActiveSheet.Range("D1").Value = "Balance"
+
+
+           
+ActiveSheet.Range("D2").Value = 0
+
+
+            If NameArrayCell < 9 Then                   'For assets and expenses, DR
+is column B, CR is column3
+
+
+                ActiveSheet.Range("B1").Value
+= "DR"
+
+
+               
+ActiveSheet.Range("C1").Value = "CR"
+
+
+            Else                                         'For
+liabilities and revenues, CR is column B, DR is column 3
+
+
+               
+ActiveSheet.Range("C1").Value = "DR"
+
+
+               
+ActiveSheet.Range("B1").Value = "CR"
+
+
+            End If
+
+
+       
+End If
+
+
+   
+
+
+
+Next
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+Sub mySForm()
+
+
+UserForm1.Show
+
+
+End Sub
+
+
+ 
+
+
+Sub Input_Account(Sheetname As String,
+Amnt As Currency, Trans_Date As Date, Column As Byte, Memo As String)
+
+
+ 
+
+
+Dim i As Integer
+
+
+Dim j As Integer
+
+
+ 
+
+
+ActiveWorkbook.Sheets(Sheetname).Activate
+
+
+i = 3
+
+
+ 
+
+
+Amnt = Abs(Amnt)        'The column essentially determines
+whether it is plus or minus
+
+
+ 
+
+
+'Find first blank row - first number
+is row, second is column
+
+
+ 
+
+
+While Not IsEmpty(Cells(i, 1))
+
+
+                i = i + 1
+
+
+Wend
+
+
+ 
+
+
+'Input date and, in appropriate
+column, Amount. [Sort] Calculate balance
+
+
+ 
+
+
+Cells(i, 1).Value = Trans_Date
+
+
+Cells(i, Column).Value = Amnt
+
+
+Cells(i, 5).Value = Memo
+
+
+ 
+
+
+'Now sort just to make sure everything
+is in date order
+
+
+ 
+
+
+Range("A3:E" & i).Select
+
+
+   
+ActiveWorkbook.Worksheets(Sheetname).Sort.SortFields.Clear
+
+
+   
+ActiveWorkbook.Worksheets(Sheetname).Sort.SortFields.Add
+Key:=Range("A3:A" & i), _
+
+
+       
+SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+
+
+   
+With ActiveWorkbook.Worksheets(Sheetname).Sort
+
+
+       
+.SetRange Range("A3:E" & i)
+
+
+       
+.Header = xlGuess
+
+
+       
+.MatchCase = False
+
+
+       
+.Orientation = xlTopToBottom
+
+
+       
+.SortMethod = xlPinYin
+
+
+       
+.Apply
+
+
+   
+End With
+
+
+   
+
+
+
+'Update the balance, = prev balance +
+col2 - col3
+
+
+   
+
+
+
+For j = 3 To i
+
+
+       
+Cells(j, 4).Value = Cells(j - 1, 4).Value + Cells(j, 2).Value - Cells(j,
+3).Value
+
+
+Next
+
+
+ 
+
+
+   
+Columns("A:D").Select
+
+
+   
+Selection.Columns.AutoFit
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+'Decides whether the input amount
+should go in column B or column C
+
+
+'If it's an asset or expense and +ve,
+it goes in column C, which is designated CR; if negative, in column B, DR
+
+
+'If it's a liability or revenue and
++ve, it goes in column B, CR; if -ve, in C, DR
+
+
+ 
+
+
+Function Return_Col(Ac As String, Amt
+As Currency) As Byte
+
+
+ 
+
+
+Dim Asset As Boolean
+
+
+Dim Temp_Col As Byte
+
+
+ 
+
+
+Asset = False
+
+
+Temp_Col = 3                'The default is column 3
+
+
+ 
+
+
+If (Ac = "Cash" Or Ac =
+"Receivables" Or Ac = "Payroll exp" Or Ac = "Admin
+exp" Or Ac = "Other Opex" Or Ac = "Taxes, etc" Or Ac =
+"Freelancers") Then
+
+
+   
+Asset = True
+
+
+End If
+
+
+ 
+
+
+If (Asset = True And Amt > 0) Or
+(Asset = False And Amt > 0) Then     
+'If neither of these, then it must be in the default column 3
+
+
+Temp_Col = 2
+
+
+End If
+
+
+ 
+
+
+Return_Col = Temp_Col
+
+
+ 
+
+
+End Function
+
+
+ 
+
+
+'If you want to add new accounts,
+don't forget to adapt this Function accordingly
+
+
+ 
+
+
+Function DirectSheet(Account As
+String) As String
+
+
+ 
+
+
+Dim Destination_Sheet As String
+
+
+ 
+
+
+Select Case Account
+
+
+Case Is = "Cash"
+
+
+   
+Destination_Sheet = "A-cash"
+
+
+Case Is = "Receivables"
+
+
+   
+Destination_Sheet = "A-rcbls"
+
+
+Case Is = "Other asset"
+
+
+   
+Destination_Sheet = "A-other"
+
+
+Case Is = "Payroll exp"
+
+
+   
+Destination_Sheet = "A-payrollexp"
+
+
+Case Is = "Admin exp"
+
+
+   
+Destination_Sheet = "A-adminexp"
+
+
+Case Is = "Other Opex"
+
+
+   
+Destination_Sheet = "A-otheropex"
+
+
+Case Is = "Taxes, etc"
+
+
+   
+Destination_Sheet = "A-taxetc"
+
+
+Case Is = "Loans"
+
+
+   
+Destination_Sheet = "L-loans"
+
+
+Case Is = "Payables"
+
+
+   
+Destination_Sheet = "L-payables"
+
+
+Case Is = "Deferred
+Revenues"
+
+
+   
+Destination_Sheet = "L-defdrevs"
+
+
+Case Is = "Accrued Payroll"
+
+
+   
+Destination_Sheet = "L-accpayroll"
+
+
+Case Is = " Other
+accrued/uncashed checks "
+
+
+   
+Destination_Sheet = "L-otheraccrued"
+
+
+Case Is = "Revs"
+
+
+   
+Destination_Sheet = "L-revs"
+
+
+Case Is = "Freelancers"
+
+
+   
+Destination_Sheet = "A-freelancexp"
+
+
+End Select
+
+
+ 
+
+
+DirectSheet = Destination_Sheet
+
+
+ 
+
+
+End Function
+
+
+ 
+
+
+Sub Button4_Click()                               'To generate
+reports
+
+
+ 
+
+
+ mySForm2
+
+
+ 
+
+
+ Dim ReportChoice As String
+
+
+ Dim BegDate As Date, EndDate As Date
+
+
+ Dim BS, IncS As Boolean
+
+
+ Dim wksht As Worksheet
+
+
+ Dim flag As Boolean
+
+
+ 
+
+
+ 'First create Balance Sheet and Income
+Statement worksheets if they don't already exist
+
+
+ 
+
+
+flag = False
+
+
+ 
+
+
+For Each wksht In
+ActiveWorkbook.Worksheets
+
+
+   
+If wksht.Name = "Balance Sheet" Then flag = True
+
+
+Next
+
+
+ 
+
+
+If flag = False Then Call
+CreateBalanceSheet
+
+
+ 
+
+
+flag = False
+
+
+ 
+
+
+For Each wksht In
+ActiveWorkbook.Worksheets
+
+
+   
+If wksht.Name = "Income Statement" Then flag = True
+
+
+Next
+
+
+ 
+
+
+If flag = False Then Call
+CreateIncomeStatement
+
+
+ 
+
+
+'Now figure out which report is being
+requested
+
+
+ 
+
+
+ BS = False
+
+
+ IncS = False
+
+
+ 
+
+
+
+ ReportChoice =
+Sheets("options").Range("D2").Value
+
+
+ 
+
+
+restart:
+
+
+ 
+
+
+ If ReportChoice = "Both" Then
+
+
+   
+BS = True
+
+
+   
+IncS = True
+
+
+   
+BegDate = InputBox("Beginning Date (mm/dd/yy)?")
+
+
+   
+ElseIf ReportChoice = "Income Statement" Then
+
+
+   
+IncS = True
+
+
+   
+BegDate = InputBox("Beginning Date (mm/dd/yy)?")
+
+
+   
+ElseIf ReportChoice = "Balance Sheet" Then BS = True
+
+
+ End If
+
+
+ 
+
+
+ EndDate = InputBox("Date Ended
+(mm/dd/yy)?")
+
+
+ 
+
+
+ If EndDate < BegDate Then
+
+
+   
+MsgBox ("End Date must be later than Beginning Date")
+
+
+   
+GoTo restart
+
+
+ End If
+
+
+ 
+
+
+If BS = True Then Call
+FillBalanceSheet(EndDate)
+
+
+ 
+
+
+If IncS = True Then Call
+FillIncomeStatement(BegDate, EndDate)
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+Sub mySForm2()
+
+
+UserForm2.Show
+
+
+End Sub
+
+
+ 
+
+
+Sub CreateBalanceSheet()
+
+
+ 
+
+
+Worksheets.Add().Name = "Balance
+Sheet"
+
+
+Worksheets("Balance
+Sheet").Activate
+
+
+ 
+
+
+   
+Range("A1").Select
+
+
+   
+Application.CutCopyMode = False
+
+
+   
+ActiveCell.FormulaR1C1 = "As of:"
+
+
+   
+Range("A3").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Assets"
+
+
+   
+Range("A4").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Cash"
+
+
+   
+Range("A5").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Receivables"
+
+
+   
+Range("A6").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Other Assets"
+
+
+   
+Range("A8").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Total Assets"
+
+
+   
+Range("A10").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Liabilities & Equity"
+
+
+   
+Range("A11").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Accounts Payable"
+
+
+   
+Range("A12").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Accrued Payroll"
+
+
+   
+Range("A13").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Other Accrued Liabilities"
+
+
+   
+Range("A14").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Deferred Revenues"
+
+
+   
+Range("A15").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Loans"
+
+
+   
+Range("A17").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Equity"
+
+
+   
+Range("A19").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Total Liabilities & Equity"
+
+
+   
+Columns("A:A").Select
+
+
+   
+Selection.Columns.AutoFit
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+Sub CreateIncomeStatement()
+
+
+ 
+
+
+Worksheets.Add().Name = "Income
+Statement"
+
+
+Worksheets("Income
+Statement").Activate
+
+
+ 
+
+
+   
+Range("A1").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Period ended:"
+
+
+   
+Range("A2").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "(Days)"
+
+
+   
+Range("A4").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Revenues"
+
+
+   
+Range("A6").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Expenses"
+
+
+   
+Range("A7").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "LT Contractors"
+
+
+   
+Range("A8").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "ST Contractors"
+
+
+   
+Range("A9").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Administrative"
+
+
+   
+Range("A10").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Taxes, etc"
+
+
+   
+Range("A11").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Other Opex"
+
+
+   
+Range("A12").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Operating Expenses"
+
+
+   
+Range("A14").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "Income"
+
+
+   
+Columns("A:A").Select
+
+
+   
+Selection.Columns.AutoFit
+
+
+End Sub
+
+
+ 
+
+
+Sub FillBalanceSheet(AsOfDate As Date)
+
+
+ 
+
+
+Dim SheetNameArray(1 To 8) As String
+
+
+Dim RowNo(1 To 8) As Byte
+
+
+Dim i As Byte
+
+
+Dim Entry As Currency
+
+
+ 
+
+
+SheetNameArray(1) = "A-cash"
+
+
+SheetNameArray(2) =
+"A-rcbls"
+
+
+SheetNameArray(3) =
+"A-other"
+
+
+SheetNameArray(4) =
+"L-payables"
+
+
+SheetNameArray(5) =
+"L-accpayroll"
+
+
+SheetNameArray(6) =
+"L-otheraccrued"
+
+
+SheetNameArray(7) =
+"L-defdrevs"
+
+
+SheetNameArray(8) =
+"L-loans"
+
+
+ 
+
+
+RowNo(1) = 4
+
+
+RowNo(2) = 5
+
+
+RowNo(3) = 6
+
+
+RowNo(4) = 11
+
+
+RowNo(5) = 12
+
+
+RowNo(6) = 13
+
+
+RowNo(7) = 14
+
+
+RowNo(8) = 15
+
+
+ 
+
+
+Worksheets("Balance
+Sheet").Activate
+
+
+'First insert column in case there is
+already data here that you want to keep
+
+
+Columns("B:B").Select
+
+
+   
+Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+
+   
+
+
+
+Cells(1, 2).Value = AsOfDate
+
+
+ 
+
+
+For i = 1 To 8
+
+
+ 
+
+
+Entry = GetBSEntry(SheetNameArray(i),
+AsOfDate)
+
+
+Worksheets("Balance
+Sheet").Activate
+
+
+Cells(RowNo(i), 2).Value = Entry
+
+
+ 
+
+
+Next
+
+
+ 
+
+
+'Assets sum of total, equity = assets
+- liabilities
+
+
+ 
+
+
+   
+Range("B8").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "=SUM(R[-4]C:R[-2]C)"
+
+
+   
+Range("B19").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "=R[-11]C"
+
+
+   
+Range("B17").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "=R[-9]C-SUM(R[-6]C:R[-2]C)"
+
+
+   
+Range("B18").Select
+
+
+ 
+
+
+Columns("B:B").Select
+
+
+Selection.Columns.AutoFit
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+Function GetBSEntry(TabName As String,
+LastDate As Date)
+
+
+ 
+
+
+Dim rowcounter As Integer
+
+
+ 
+
+
+rowcounter = 3
+
+
+ 
+
+
+Worksheets(TabName).Activate
+
+
+ 
+
+
+If IsEmpty(Cells(rowcounter, 1)) Then
+
+
+   
+GetBSEntry = 0
+
+
+   
+Exit Function
+
+
+End If
+
+
+ 
+
+
+While Not Cells(rowcounter, 1).Value
+> LastDate
+
+
+   
+rowcounter = rowcounter + 1
+
+
+   
+If IsEmpty(Cells(rowcounter, 1)) Then GoTo GetOutAgain
+
+
+Wend
+
+
+ 
+
+
+GetOutAgain:
+
+
+rowcounter = rowcounter - 1
+
+
+ 
+
+
+GetBSEntry = Cells(rowcounter,
+4).Value
+
+
+ 
+
+
+End Function
+
+
+ 
+
+
+Function GetISEntry(TabName As String,
+FirstDate As Date, LastDate As Date)
+
+
+ 
+
+
+Dim rowcounter As Integer
+
+
+Dim endrow As Integer
+
+
+Dim begrow As Integer
+
+
+Dim sumcounter As Integer
+
+
+Dim cum1, cum2 As Currency
+
+
+ 
+
+
+rowcounter = 3
+
+
+ 
+
+
+Worksheets(TabName).Activate
+
+
+ 
+
+
+If IsEmpty(Cells(rowcounter, 1))
+Then             'If the tab (account) is
+empty, exit function
+
+
+   
+GetISEntry = 0
+
+
+   
+Exit Function
+
+
+End If
+
+
+ 
+
+
+ 
+
+
+While Not Cells(rowcounter, 1).Value
+> LastDate       'To get the last row
+containing the ending date for the period
+
+
+   
+rowcounter = rowcounter + 1
+
+
+   
+If IsEmpty(Cells(rowcounter, 1)) Then GoTo GetOut    'To prevent going to the 32 thousandth row
+
+
+Wend
+
+
+ 
+
+
+ 
+
+
+GetOut:
+
+
+endrow = rowcounter - 1
+
+
+ 
+
+
+rowcounter = 3
+
+
+ 
+
+
+While Cells(rowcounter, 1).Value <
+FirstDate          'To find the first row
+of the period, or begrow
+
+
+Wend
+
+
+ 
+
+
+begrow = rowcounter
+
+
+ 
+
+
+cum1 = 0                                           
+'keep adding the amounts in the second column
+
+
+For sumcounter = begrow To endrow
+
+
+cum1 = cum1 + Cells(sumcounter,
+2).Value
+
+
+Next
+
+
+ 
+
+
+cum2 = 0                                            
+'keep adding the amounts in the third column
+
+
+For sumcounter = begrow To endrow
+
+
+cum2 = cum2 + Cells(sumcounter,
+3).Value
+
+
+Next
+
+
+ 
+
+
+GetISEntry = cum1 - cum2                            'calculate the net
+for the period, column2 - column1
+
+
+ 
+
+
+End Function
+
+
+ 
+
+
+Sub FillIncomeStatement(BegD As Date,
+EndD As Date)
+
+
+ 
+
+
+Dim SheetNameArray(1 To 6) As String
+
+
+Dim RowNo(1 To 6) As Byte
+
+
+Dim i As Byte
+
+
+Dim Entry As Currency
+
+
+ 
+
+
+SheetNameArray(1) = "L-revs"
+
+
+SheetNameArray(2) =
+"A-payrollexp"
+
+
+SheetNameArray(3) =
+"A-adminexp"
+
+
+SheetNameArray(4) =
+"A-taxetc"
+
+
+SheetNameArray(5) =
+"A-otheropex"
+
+
+SheetNameArray(6) = "A-freelancexp"
+
+
+ 
+
+
+RowNo(1) = 4
+
+
+RowNo(2) = 7
+
+
+RowNo(3) = 9
+
+
+RowNo(4) = 10
+
+
+RowNo(5) = 11
+
+
+RowNo(6) = 8
+
+
+ 
+
+
+Worksheets("Income
+Statement").Activate
+
+
+'First insert column in case there is
+already data here that you want to keep
+
+
+Columns("B:B").Select
+
+
+   
+Selection.Insert Shift:=xlToRight, CopyOrigin:=xlFormatFromLeftOrAbove
+
+
+ 
+
+
+Cells(1, 2).Value = EndDate              'Date for column header
+
+
+ 
+
+
+For i = 1 To 6
+
+
+ 
+
+
+Entry = GetISEntry(SheetNameArray(i),
+BegD, EndD)
+
+
+Worksheets("Income
+Statement").Activate
+
+
+Cells(RowNo(i), 2).Value = Entry
+
+
+ 
+
+
+Next
+
+
+ 
+
+
+'Formulae
+
+
+Range("B1").Value = EndD
+
+
+Range("B2").Value = EndD -
+BegD
+
+
+ 
+
+
+Range("B12").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "=SUM(R[-5]C:R[-1]C)"
+
+
+   
+Range("B14").Select
+
+
+   
+ActiveCell.FormulaR1C1 = "=R[-10]C-R[-2]C"
+
+
+   
+Range("B15").Select
+
+
+   
+
+
+
+Columns("B:B").Select
+
+
+Selection.Columns.AutoFit
+
+
+ 
+
+
+End Sub
+
+
+ 
+
+
+Sub JEntry_Insertrow()                              'So that each
+journal entry series is separated from the next, for ease of reading
+
+
+ 
+
+
+Dim i As Integer
+
+
+ 
+
+
+Worksheets("J_Entry").Activate
+
+
+i = 3                                              
+'Find the starting row, marked with an "x" in Col A
+
+
+While Not Cells(i, 1).Value =
+"x"
+
+
+i = i + 1
+
+
+Wend
+
+
+ 
+
+
+Rows(i).Select
+
+
+ Selection.Insert Shift:=xlDown,
+CopyOrigin:=xlFormatFromLeftOrAbove
+
+
+ 
+
+
+End Sub
+
+
