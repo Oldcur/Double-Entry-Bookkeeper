@@ -1,0 +1,103 @@
+
+
+
+Private Sub UserForm_Click()
+
+
+Private Sub UserForm_Initialize()
+
+
+Dim RngTags As Range, RngNames As
+Range, i As Long
+
+
+ 
+
+
+Set Rng1 =
+Sheets("options").Range("reports")
+
+
+ 
+
+
+With ComboBox1
+
+
+.ColumnCount = 1
+
+
+.Style = fmStyleDropDownList
+
+
+.TextAlign = fmTextAlignLeft
+
+
+.BoundColumn = 1
+
+
+ 
+
+
+For i = 1 To Rng1.count
+
+
+.AddItem Rng1(i).Value
+
+
+.List(.ListCount - 1, 1) =
+Rng1(i).Value
+
+
+Next i
+
+
+ 
+
+
+End With
+
+
+End Sub
+
+
+ 
+
+
+ 
+
+
+Private Sub ComboBox1_Change()
+
+
+Sheets("options").Range("D2").Value
+= ComboBox1.Value
+
+
+ 
+
+
+myUnLoad
+
+
+End Sub
+
+
+ 
+
+
+ 
+
+
+Sub myUnLoad()
+
+
+UserForm2.Hide
+
+
+End Sub
+
+
+ 
+
+
