@@ -12,19 +12,32 @@ also includes Userform1.
 In double-entry book-keeping, a transaction involves two or more accounts. The accounts  included in this version are:
 
 Cash
+
 Receivables
+
 Other asset
+
 Payroll exp
+
 Admin exp
+
 Other Opex
+
 Taxes, etc
+
 Freelancers
 
+
 Revs
+
 Loans
+
 Payables
+
 Deferred Revenues
+
 Accrued Payroll
+
 Other accrued/uncashed checks 
 
 
@@ -37,30 +50,17 @@ The accounts are classified as Asset/Expense accounts or Liability/Revenue accou
  
 
 
-The following rules apply in
-double-entry book-keeping:
+The following rules apply in double-entry book-keeping:
 
 
- 
+
+In Asset/Expense accounts, an increase is called a Debit (DR) and a decrease is called a Credit (CR). Traditionally,
+in listing the DR and CR for this type of account, the DR is on the left and the CR on the right. The columns in the "A-" sheets are titled in this traditional way. In Liability/Revenue accounts, an increase is a CR (listed on the left) and a decrease is a DR (right).
 
 
-In Asset/Expense accounts, an increase
-is called a Debit (DR) and a decrease is called a Credit (CR). Traditionally,
-in listing the DR and CR for this type of account, the DR is on the left and
-the CR on the right. The columns in the "A-" sheets are titled in
-this traditional way. In Liability/Revenue accounts, an increase is a CR
-(listed on the left) and a decrease is a DR (right).
 
-
- 
-
-
-An increase in an asset account (a DR)
-must be balanced by either an increase in liabilities/revenues (a CR) or a decrease
-in another asset account (a CR), or some combination of these. Ultimately, in
-any transaction the sum of the CRs must equal the sum of the DRs.
-
-
+An increase in an asset account (a DR) must be balanced by either an increase in liabilities/revenues (a CR) or a decrease
+in another asset account (a CR), or some combination of these. Ultimately, in any transaction the sum of the CRs must equal the sum of the DRs.
  
 
 
@@ -235,7 +235,7 @@ names must begin with "A-".
 
 
 (d) Update the Generate A Report functions.
-This is quite intuitive. Update the titles in column A and update the formulae.
+This is quite intuitive. Update the titles in column A and update the formulae accordingly.
 
 
 
